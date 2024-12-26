@@ -15,7 +15,7 @@ const MonthlyRevenueChart = () => {
   const data = {
     labels: [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec1',
     ],
     datasets: [
       {
