@@ -1,6 +1,38 @@
 import React, { useEffect, useState } from "react";
 
 const InvoiceForm1 = ({ onForm1DataChange }) => {
+  // Language system
+  const language = localStorage.getItem('selectedLanguage') || 'en';
+  const translations = {
+    en: {
+      customerNotes: 'Customer Notes',
+      notesPlaceholder: 'Thanks for your business.',
+      notesHelp: 'Will be displayed on the invoice',
+      total: 'Total',
+      subTotal: 'Sub Total',
+      discount: 'Discount',
+      tax: 'Tax',
+      tds: 'TDS',
+      tcs: 'TCS',
+      selectTax: 'Select a Tax',
+      addTerms: 'Add Terms and conditions',
+    },
+    hi: {
+      customerNotes: 'ग्राहक नोट्स',
+      notesPlaceholder: 'आपके व्यवसाय के लिए धन्यवाद।',
+      notesHelp: 'यह चालान पर प्रदर्शित होगा',
+      total: 'कुल',
+      subTotal: 'उप-योग',
+      discount: 'छूट',
+      tax: 'कर',
+      tds: 'टीडीएस',
+      tcs: 'टीसीएस',
+      selectTax: 'कर चुनें',
+      addTerms: 'नियम और शर्तें जोड़ें',
+    },
+  };
+  const t = translations[language];
+
   const [notes, setNotes] = useState("Thanks for your business.");
   const [total, setTotal] = useState(0);
   const [isSubtotalOpen, setIsSubtotalOpen] = useState(false);
@@ -35,16 +67,16 @@ const InvoiceForm1 = ({ onForm1DataChange }) => {
         {/* Left Section - Customer Notes */}
         <div className="md:w-1/2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Customer Notes
+            {t.customerNotes}
           </label>
           <textarea
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows="3"
-            placeholder="Thanks for your business."
+            placeholder={t.notesPlaceholder}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
-          <p className="text-xs text-gray-500 mt-1">Will be displayed on the invoice</p>
+          <p className="text-xs text-gray-500 mt-1">{t.notesHelp}</p>
         </div>
 
         {/* Right Section - Total and Subtotal */}
@@ -53,7 +85,7 @@ const InvoiceForm1 = ({ onForm1DataChange }) => {
             className="flex items-center justify-between cursor-pointer ml-auto mb-4"
             onClick={toggleSubtotal}
           >
-            <span className="font-semibold text-lg">Total</span>
+            <span className="font-semibold text-lg">{t.total}</span>
             <span className="text-gray-900 font-semibold">{total.toFixed(2)}</span>
           </div>
 
@@ -61,11 +93,11 @@ const InvoiceForm1 = ({ onForm1DataChange }) => {
           {isSubtotalOpen && (
             <div className="mt-2 space-y-2">
               <div className="flex justify-between">
-                <span className="font-semibold">Sub Total</span>
+                <span className="font-semibold">{t.subTotal}</span>
                 <span className="text-gray-900 font-semibold">{subTotal.toFixed(2)}</span>
               </div>
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <label className="font-semibold">Discount</label>
+                <label className="font-semibold">{t.discount}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -88,7 +120,7 @@ const InvoiceForm1 = ({ onForm1DataChange }) => {
                       checked={taxType === "TDS"}
                       onChange={() => setTaxType("TDS")}
                     />{" "}
-                    TDS
+                    {t.tds}
                   </label>
                   <label className="flex items-center gap-1">
                     <input
@@ -97,7 +129,7 @@ const InvoiceForm1 = ({ onForm1DataChange }) => {
                       checked={taxType === "TCS"}
                       onChange={() => setTaxType("TCS")}
                     />{" "}
-                    TCS
+                    {t.tcs}
                   </label>
                 </div>
                 <select
@@ -105,7 +137,7 @@ const InvoiceForm1 = ({ onForm1DataChange }) => {
                   value={taxRate}
                   onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
                 >
-                  <option value="0">Select a Tax</option>
+                  <option value="0">{t.selectTax}</option>
                   <option value="5">5%</option>
                   <option value="10">10%</option>
                   <option value="15">15%</option>
@@ -130,7 +162,7 @@ const InvoiceForm1 = ({ onForm1DataChange }) => {
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
-        Add Terms and conditions
+        {t.addTerms}
       </button>
     </div>
   );

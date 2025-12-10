@@ -10,6 +10,50 @@ import axios from 'axios'
 const OrganizationForm = ({ user, onOrganizationAdded }) => {
   const navigate = useNavigate(); // Initialize useNavigate
 
+  // Language state and translation
+  const [language, setLanguage] = useState(() => localStorage.getItem('selectedLanguage') || 'en');
+  const translations = {
+    en: {
+      welcome: 'Welcome aboard',
+      enterDetails: 'Enter your organization details to get started with Invoiced.',
+      orgName: 'Organization Name*',
+      orgNamePlaceholder: 'Enter Organization Name',
+      industry: 'Industry*',
+      industryPlaceholder: 'Enter Industry',
+      orgLocation: 'Organization Location*',
+      orgLocationPlaceholder: 'Enter Location',
+      state: 'State/Union Territory*',
+      statePlaceholder: 'State/Union Territory',
+      logoUpload: 'Logo Upload*',
+      gstRegistered: 'Is this business registered for GST?',
+      getStarted: 'Get Started',
+      goBack: 'Go Back',
+      chooseLanguage: 'Choose Language',
+      english: 'English',
+      hindi: 'Hindi',
+    },
+    hi: {
+      welcome: 'स्वागत है',
+      enterDetails: 'Invoiced के साथ शुरू करने के लिए अपने संगठन का विवरण दर्ज करें।',
+      orgName: 'संगठन का नाम*',
+      orgNamePlaceholder: 'संगठन का नाम दर्ज करें',
+      industry: 'उद्योग*',
+      industryPlaceholder: 'उद्योग दर्ज करें',
+      orgLocation: 'संगठन स्थान*',
+      orgLocationPlaceholder: 'स्थान दर्ज करें',
+      state: 'राज्य/संघ राज्य क्षेत्र*',
+      statePlaceholder: 'राज्य/संघ राज्य क्षेत्र',
+      logoUpload: 'लोगो अपलोड*',
+      gstRegistered: 'क्या यह व्यवसाय GST के लिए पंजीकृत है?',
+      getStarted: 'शुरू करें',
+      goBack: 'वापस जाएं',
+      chooseLanguage: 'भाषा चुनें',
+      english: 'अंग्रेज़ी',
+      hindi: 'हिंदी',
+    },
+  };
+  const t = translations[language];
+
   // Form State
   const [logoFile, setLogoFile] = useState(null);
   const [organizationName, setOrganizationName] = useState('');
@@ -17,9 +61,8 @@ const OrganizationForm = ({ user, onOrganizationAdded }) => {
   const [organizationLocation, setOrganizationLocation] = useState('India');
   const [state, setState] = useState('');
   const [currency] = useState('INR - Indian Rupee');
-  const [language] = useState('English');
-  const [timezone] = useState('(GMT 5:30) India Standard Time (Asia/Calcutta)');
   const [gstRegistered, setGstRegistered] = useState(false);
+  const [timezone] = useState('(GMT 5:30) India Standard Time (Asia/Calcutta)');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,6 +128,10 @@ const OrganizationForm = ({ user, onOrganizationAdded }) => {
     }
   };
   
+  const handleLanguageChange = (e) => {
+    setLanguage(e.target.value);
+    localStorage.setItem('selectedLanguage', e.target.value);
+  };
 
   return (
     <div
@@ -109,9 +156,21 @@ const OrganizationForm = ({ user, onOrganizationAdded }) => {
       <div className="bg-white shadow-lg rounded-3xl max-w-3xl w-full border-4 border-white">
         {/* Header Section */}
         <div className="p-6 rounded-t-lg" style={{ backgroundColor: '#f0f4fc' }}>
-          <h2 className="text-xl font-bold mb-2">Welcome aboard, {user ? user.displayName : 'User'}! 🤝</h2>
+          {/* Language Selector */}
+          <div className="flex justify-end mb-2">
+            <label className="mr-2 font-medium text-gray-700">{t.chooseLanguage}:</label>
+            <select
+              value={language}
+              onChange={handleLanguageChange}
+              className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="en">{t.english}</option>
+              <option value="hi">{t.hindi}</option>
+            </select>
+          </div>
+          <h2 className="text-xl font-bold mb-2">{t.welcome}, {user ? user.displayName : 'User'}! 🤝</h2>
           <p className="text-sm text-gray-600">
-            Enter your organization details to get started with Invoiced.
+            {t.enterDetails}
           </p>
         </div>
 
@@ -120,28 +179,28 @@ const OrganizationForm = ({ user, onOrganizationAdded }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">
-                Organization Name*
+                {t.orgName}
               </label>
               <input
                 type="text"
                 value={organizationName}
                 onChange={(e) => setOrganizationName(e.target.value)}
                 className="w-full border border-gray-300 p-3 rounded-md bg-white focus:border-blue-500 transition"
-                placeholder="Enter Organization Name"
+                placeholder={t.orgNamePlaceholder}
                 required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">
-                Industry*
+                {t.industry}
               </label>
               <input
                 type="text"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
                 className="w-full border border-gray-300 p-3 rounded-md bg-white"
-                placeholder="Enter Industry"
+                placeholder={t.industryPlaceholder}
                 required
               />
             </div>
@@ -149,28 +208,28 @@ const OrganizationForm = ({ user, onOrganizationAdded }) => {
             <div className="flex items-center justify-between">
               <div className="w-1/2 pr-4">
                 <label className="block text-sm font-medium text-gray-600 mb-2">
-                  Organization Location*
+                  {t.orgLocation}
                 </label>
                 <input
                   type="text"
                   value={organizationLocation}
                   onChange={(e) => setOrganizationLocation(e.target.value)}
                   className="w-full border border-gray-300 p-3 rounded-md bg-white"
-                  placeholder="Enter Location"
+                  placeholder={t.orgLocationPlaceholder}
                   required
                 />
               </div>
 
               <div className="w-1/2 pl-4">
                 <label className="block text-sm font-medium text-gray-600 mb-2">
-                  State/Union Territory*
+                  {t.state}
                 </label>
                 <input
                   type="text"
                   value={state}
                   onChange={(e) => setState(e.target.value)}
                   className="w-full border border-gray-300 p-3 rounded-md bg-white"
-                  placeholder="State/Union Territory"
+                  placeholder={t.statePlaceholder}
                   required
                 />
               </div>
@@ -179,7 +238,7 @@ const OrganizationForm = ({ user, onOrganizationAdded }) => {
             {/* Logo Upload Section */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">
-                Logo Upload*
+                {t.logoUpload}
               </label>
               <input
                 type="file"
@@ -192,7 +251,7 @@ const OrganizationForm = ({ user, onOrganizationAdded }) => {
 
             <div className="flex items-center space-x-4">
               <label className="text-sm font-medium text-gray-600">
-                Is this business registered for GST?
+                {t.gstRegistered}
               </label>
               <input
                 type="checkbox"
@@ -206,14 +265,14 @@ const OrganizationForm = ({ user, onOrganizationAdded }) => {
 
             <div className="flex items-center justify-between">
               <button type="submit" className="bg-blue-600 text-white py-3 px-5 rounded-md">
-                Get Started
+                {t.getStarted}
               </button>
               <button
                 type="button"
                 className="bg-gray-300 text-gray-600 py-3 px-5 rounded-md"
                 onClick={() => navigate('/dashboard')} // Navigate to /dashboard
               >
-                Go Back
+                {t.goBack}
               </button>
             </div>
           </form>

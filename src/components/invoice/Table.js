@@ -4,6 +4,51 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { FaAngleDown } from "react-icons/fa";
 function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
+  // Language system
+  const language = localStorage.getItem('selectedLanguage') || 'en';
+  const translations = {
+    en: {
+      itemTable: 'Item Table',
+      itemDetails: 'Item Details',
+      quantity: 'Quantity',
+      rate: 'Rate',
+      amount: 'Amount',
+      addRow: '+ Add New Row',
+      customerNotes: 'Customer Notes',
+      notesPlaceholder: 'Thanks for your business.',
+      notesHelp: 'Will be displayed on the invoice',
+      subTotal: 'Sub Total',
+      discount: 'Discount',
+      tds: 'TDS',
+      tcs: 'TCS',
+      selectTax: 'Select a Tax',
+      total: 'Total ( ₹ )',
+      showSummary: 'show Total summary',
+      addTerms: 'Add Terms and conditions',
+      remove: 'Remove',
+    },
+    hi: {
+      itemTable: 'आइटम तालिका',
+      itemDetails: 'आइटम विवरण',
+      quantity: 'मात्रा',
+      rate: 'दर',
+      amount: 'राशि',
+      addRow: '+ नई पंक्ति जोड़ें',
+      customerNotes: 'ग्राहक नोट्स',
+      notesPlaceholder: 'आपके व्यवसाय के लिए धन्यवाद।',
+      notesHelp: 'यह चालान पर प्रदर्शित होगा',
+      subTotal: 'उप-योग',
+      discount: 'छूट',
+      tds: 'टीडीएस',
+      tcs: 'टीसीएस',
+      selectTax: 'कर चुनें',
+      total: 'कुल ( ₹ )',
+      showSummary: 'कुल सारांश दिखाएं',
+      addTerms: 'नियम और शर्तें जोड़ें',
+      remove: 'हटाएं',
+    },
+  };
+  const t = translations[language];
   const [rows, setRows] = useState([{ id: 1, itemDetails: '', quantity: 1, rate: 0, amount: 0 }]);
   const [products, setProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(null); // Stores row ID for dropdown visibility
@@ -140,16 +185,16 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
   return (
     <div className="p-4  rounded-lg w-full mx-auto">
       <div className="border-b pb-2">
-        <h2 className="text-lg font-semibold ml-3">Item Table</h2>
+        <h2 className="text-lg font-semibold ml-3">{t.itemTable}</h2>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full mt-2 text-sm text-left text-gray-900">
           <thead>
             <tr className="bg-gray-100">
-              <th className="p-2 pl-3">Item Details</th>
-              <th className="p-2 text-center">Quantity</th>
-              <th className="p-2 text-center">Rate</th>
-              <th className="p-2 text-center">Amount</th>
+              <th className="p-2 pl-3">{t.itemDetails}</th>
+              <th className="p-2 text-center">{t.quantity}</th>
+              <th className="p-2 text-center">{t.rate}</th>
+              <th className="p-2 text-center">{t.amount}</th>
               <th className="p-2 text-center"></th>
             </tr>
           </thead>
@@ -162,7 +207,7 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
                     value={row.itemDetails}
                     onChange={(e) => handleInputChange(row.id, 'itemDetails', e.target.value)}
                     onClick={() => setShowDropdown(row.id)}   
-                    placeholder="Type or click to select an item."
+                    placeholder={t.itemDetails}
                     className="w-full p-2 border rounded focus:outline-none"
                   />
                   {showDropdown === row.id && (
@@ -214,7 +259,7 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
           onClick={addRow}
           className="flex items-center justify-center gap-2 px-3 py-2 text-blue-600 border border-blue-600 rounded w-full md:w-auto"
         >
-          + Add New Row
+          {t.addRow}
         </button>
       </div>
 
@@ -225,16 +270,16 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
         {/* Left Section - Customer Notes */}
         <div className="md:w-1/2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Customer Notes
+            {t.customerNotes}
           </label>
           <textarea
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows="3"
-            placeholder="Thanks for your business."
+            placeholder={t.notesPlaceholder}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
-          <p className="text-xs text-gray-500 mt-1">Will be displayed on the invoice</p>
+          <p className="text-xs text-gray-500 mt-1">{t.notesHelp}</p>
         </div>
 
         {/* Right Section - Total and Subtotal */}
@@ -242,11 +287,11 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
         {isSubtotalOpen && (
             <div className="my-2 space-y-2 mb-4 transition duration-300">
               <div className="flex justify-between">
-                <span className="font-semibold">Sub Total</span>
+                <span className="font-semibold">{t.subTotal}</span>
                 <span className="text-gray-900 font-semibold">{rows.reduce((acc, row) => acc + row.amount, 0).toFixed(2)}</span>
               </div>
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <label className="font-semibold">Discount</label>
+                <label className="font-semibold">{t.discount}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -274,7 +319,7 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
                       checked={taxType === "TDS"}
                       onChange={() => setTaxType("TDS")}
                     />{" "}
-                    TDS
+                    {t.tds}
                   </label>
                   <label className="flex items-center gap-1">
                     <input
@@ -283,7 +328,7 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
                       checked={taxType === "TCS"}
                       onChange={() => setTaxType("TCS")}
                     />{" "}
-                    TCS
+                    {t.tcs}
                   </label>
                 </div>
                 <select
@@ -298,7 +343,7 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
                     });
                   }}
                 >
-                  <option value="0">Select a Tax</option>
+                  <option value="0">{t.selectTax}</option>
                   <option value="5">5%</option>
                   <option value="10">10%</option>
                   <option value="15">15%</option>
@@ -311,10 +356,10 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
           )}
           <div
             className="flex items-center justify-between ml-auto mb-4 border-b pb-2 mb-2" >
-            <span className="font-semibold text-gray-500 text-lg">Total ( ₹ )</span>
+            <span className="font-semibold text-gray-500 text-lg">{t.total}</span>
             <span className="text-gray-900 font-semibold">{subTotal.toFixed(2)}</span>
           </div>
-          <span className='text-sm text-blue-500 cursor-pointer' onClick={toggleSubtotal}>show Total summary <FaAngleDown className='inline' /></span>
+          <span className='text-sm text-blue-500 cursor-pointer' onClick={toggleSubtotal}>{t.showSummary} <FaAngleDown className='inline' /></span>
         </div>
       </div>
 
@@ -329,7 +374,7 @@ function InvoiceTable({ onTableDataChange ,onForm1DataChange}) {
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
-        Add Terms and conditions
+        {t.addTerms}
       </button>
     </div>
     </div>

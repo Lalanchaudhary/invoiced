@@ -22,6 +22,55 @@ const Logobill = () => {
   const [rightSidebarshow,setRightSidebarshow]=useState(false);
   const [selectedOrg,setSelectedOrg]=useState(null);
       const navigate=useNavigate();
+  // Language system
+  const language = localStorage.getItem('selectedLanguage') || 'en';
+  const translations = {
+    en: {
+      invoice: 'Invoice',
+      billTo: 'Bill To:',
+      invoiceNo: 'Invoice No.',
+      qty: 'Qty',
+      rate: 'Rate',
+      amount: 'Amount',
+      item: 'Item',
+      description: 'Description',
+      subTotal: 'Sub Total',
+      discount: 'Discount',
+      tax: 'Tax',
+      grandTotal: 'Grand Total',
+      thanks: 'Thanks for your business',
+      authorizedSignature: 'Authorized Signature',
+      print: 'Print',
+      share: 'Share',
+      edit: 'Edit',
+      loading: 'Loading...',
+      noData: 'No data available.',
+      download: 'Download now!',
+    },
+    hi: {
+      invoice: 'चालान',
+      billTo: 'बिल प्राप्तकर्ता:',
+      invoiceNo: 'चालान संख्या',
+      qty: 'मात्रा',
+      rate: 'दर',
+      amount: 'राशि',
+      item: 'आइटम',
+      description: 'विवरण',
+      subTotal: 'उप-योग',
+      discount: 'छूट',
+      tax: 'कर',
+      grandTotal: 'कुल योग',
+      thanks: 'आपके व्यवसाय के लिए धन्यवाद',
+      authorizedSignature: 'अधिकृत हस्ताक्षर',
+      print: 'प्रिंट',
+      share: 'साझा करें',
+      edit: 'संपादित करें',
+      loading: 'लोड हो रहा है...',
+      noData: 'कोई डेटा उपलब्ध नहीं है।',
+      download: 'अभी डाउनलोड करें!',
+    },
+  };
+  const t = translations[language];
   useEffect(() => {
     const fetchBillData = async () => {
       try {
@@ -87,8 +136,8 @@ const Logobill = () => {
     loadSelectedOrg();
   }, [setSelectedOrg]);
 
-  if (loading) return <div className="text-center mt-8">Loading...</div>;
-  if (!billData) return <div className="text-center mt-8">No data available.</div>;
+  if (loading) return <div className="text-center mt-8">{t.loading}</div>;
+  if (!billData) return <div className="text-center mt-8">{t.noData}</div>;
 
   const { invoiceNumber, customer, items, total, createdAt } = billData;
 
@@ -209,18 +258,18 @@ const Logobill = () => {
         {/* Invoice Title */}
         <View style={styles.titleView}>
           <Image src={selectedOrg.logo} style={styles.logo} />
-          <Text style={styles.title}>Invoice</Text>
+          <Text style={styles.title}>{t.invoice}</Text>
         </View>
         {/* Bill To */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30 }}>
           <View>
-            <Text style={styles.billTo}>Bill To:</Text>
+            <Text style={styles.billTo}>{t.billTo}</Text>
             <Text style={{ fontSize: 16, marginVertical: 5, fontWeight: 'bold' }}>Mr. {billData.customer.displayName}</Text>
             <Text style={{ fontSize: 10, marginVertical: 2 }}>{billData.customer.mobile}</Text>
             <Text style={{ fontSize: 10, marginVertical: 2 }}>{billData.customer.email}</Text>
           </View>
           <View>
-            <Text style={[styles.invoiceDetails, { fontSize: 14, fontWeight: 'bold' }]}>Invoice No. INV-{billData.invoiceNumber}</Text>
+            <Text style={[styles.invoiceDetails, { fontSize: 14, fontWeight: 'bold' }]}>{t.invoiceNo} INV-{billData.invoiceNumber}</Text>
             <Text style={[styles.invoiceDetails]}>{billData.invoiceDate}</Text>
           </View>
         </View>
@@ -228,11 +277,11 @@ const Logobill = () => {
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <Text style={[styles.tableColHeader, { width: '5%' }]}>#</Text>
-            <Text style={[styles.tableColHeader, { width: '25%' }]}>Item</Text>
-            <Text style={[styles.tableColHeader, { width: '35%' }]}>Description</Text>
-            <Text style={[styles.tableColHeader, { width: '10%' }]}>Qty</Text>
-            <Text style={[styles.tableColHeader, { width: '10%' }]}>rate</Text>
-            <Text style={[styles.tableColHeader, { width: '15%' }]}>Amount</Text>
+            <Text style={[styles.tableColHeader, { width: '25%' }]}>{t.item}</Text>
+            <Text style={[styles.tableColHeader, { width: '35%' }]}>{t.description}</Text>
+            <Text style={[styles.tableColHeader, { width: '10%' }]}>{t.qty}</Text>
+            <Text style={[styles.tableColHeader, { width: '10%' }]}>{t.rate}</Text>
+            <Text style={[styles.tableColHeader, { width: '15%' }]}>{t.amount}</Text>
           </View>
 
             {
@@ -260,22 +309,22 @@ const Logobill = () => {
         {/* Subtotal and Totals */}
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={{ fontSize: 10 }}>Thanks for your buisness</Text>
+          <Text style={{ fontSize: 10 }}>{t.thanks}</Text>
           <View style={styles.subtotalHeadRow}>
             <View style={styles.subtotalRow}>
-              <Text style={{ fontSize: 10 }}>Sub Total</Text>
+              <Text style={{ fontSize: 10 }}>{t.subTotal}</Text>
               <Text style={{ fontSize: 10 }}>{billData.subTotal}</Text>
             </View>
             <View style={styles.subtotalRow}>
-              <Text style={{ fontSize: 10 }}>Discount ({billData.discount}%)</Text>
+              <Text style={{ fontSize: 10 }}>{t.discount} ({billData.discount}%)</Text>
               <Text style={{ fontSize: 10 }}>{billData.DiscPrice}</Text>
             </View>
             <View style={styles.subtotalRow}>
-              <Text style={{ fontSize: 10 }}>Tax ({billData.taxRate}%)</Text>
+              <Text style={{ fontSize: 10 }}>{t.tax} ({billData.taxRate}%)</Text>
               <Text style={{ fontSize: 10 }}>{billData.TaxPrice}</Text>
             </View>
             <View style={styles.subtotalRow1}>
-              <Text style={{ fontSize: 15, color: '#fff' }}>Grand Total</Text>
+              <Text style={{ fontSize: 15, color: '#fff' }}>{t.grandTotal}</Text>
               <Text style={{ fontSize: 15, color: '#fff' }}>Rs. {billData.total.toFixed(2)}</Text>
             </View>
           </View>
@@ -284,7 +333,7 @@ const Logobill = () => {
         <View style={styles.footer}>
           <View style={styles.footerInner}>
             <View style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-end', marginTop: 20 }}>
-              <Text style={styles.bold}>Authorized Signature</Text>
+              <Text style={styles.bold}>{t.authorizedSignature}</Text>
               <View style={{ height: 1, width: 120, backgroundColor: '#000' }}></View>
             </View>
           </View>
@@ -322,11 +371,11 @@ const Logobill = () => {
         <div>
           <div className='p-4 text-lg font-semibold'>INV-{billData.invoiceNumber}</div>
           <div className='flex w-full border bg-gray-200'>
-            <p className='inline border-r border-gray-400 p-2 px-4 cursor-pointer' onClick={() => { navigate(`/dashboard/invoice/edit/${id}`) }}> <span ><GrEdit className='inline' /></span> Edit</p>
+            <p className='inline border-r border-gray-400 p-2 px-4 cursor-pointer' onClick={() => { navigate(`/dashboard/invoice/edit/${id}`) }}> <span ><GrEdit className='inline' /></span> {t.edit}</p>
             <p className='inline border-r border-gray-400  p-2 px-4 cursor-pointer'> <IoMdPrint className='inline' /><PDFDownloadLink document={<Invoice />} fileName="invoice.pdf">
-              {({ loading }) => (loading ? 'Loading document...' : 'Print')}
+              {({ loading }) => (loading ? t.loading : t.print)}
             </PDFDownloadLink></p>
-            <p className='inline border-r border-gray-400  p-2 px-4 cursor-pointer'  onClick={()=>{navigate('/dashboard/email',{ state: { invoiceNumber: billData.invoiceNumber} })}}> <FaRegShareSquare className='inline' /> Share</p>
+            <p className='inline border-r border-gray-400  p-2 px-4 cursor-pointer'  onClick={()=>{navigate('/dashboard/email',{ state: { invoiceNumber: billData.invoiceNumber} })}}> <FaRegShareSquare className='inline' /> {t.share}</p>
           </div>
         <div style={{ marginLeft: 50 }}>
         <div className='page12' >
@@ -335,18 +384,18 @@ const Logobill = () => {
             <div>
               <img src={selectedOrg.logo} className='logo12' />
             </div>
-            <p className='title12' >Invoice</p>
+            <p className='title12' >{t.invoice}</p>
           </div>
           {/* Bill To */}
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 30 }}>
             <div>
-              <p className='billTo12'>Bill To: </p>
+              <p className='billTo12'>{t.billTo}</p>
               <p style={{ fontSize: 16, marginVertical: 5, fontWeight: 'bold' }}>Mr. {billData.customer.displayName}</p>
               <p style={{ fontSize: 12, marginVertical: 5 }}>+91 8235570955</p>
               <p style={{ fontSize: 12, marginVertical: 5 }}>lalan28@gmail.com</p>
             </div>
             <div>
-              <p className='invoiceDetails12' style={{ fontSize: 14, fontWeight: 'bold' }}>Invoice No. INV-{billData.invoiceNumber}</p>
+              <p className='invoiceDetails12' style={{ fontSize: 14, fontWeight: 'bold' }}>{t.invoiceNo} INV-{billData.invoiceNumber}</p>
               <p className='invoiceDetails12'   >{billData.invoiceDate}</p>
             </div>
           </div>
@@ -354,11 +403,11 @@ const Logobill = () => {
           <div className='table12'>
             <div className='tableRow12'>
               <p className='tableColHeader12' style={{ width: '5%' }}>#</p>
-              <p className='tableColHeader12' style={{ width: '25%' }}>Item</p>
-              <p className='tableColHeader12' style={{ width: '35%' }}>Description</p>
-              <p className='tableColHeader12' style={{ width: '10%' }}>Qty</p>
-              <p className='tableColHeader12' style={{ width: '10%' }}>rate</p>
-              <p className='tableColHeader12' style={{ width: '15%' }}>Amount</p>
+              <p className='tableColHeader12' style={{ width: '25%' }}>{t.item}</p>
+              <p className='tableColHeader12' style={{ width: '35%' }}>{t.description}</p>
+              <p className='tableColHeader12' style={{ width: '10%' }}>{t.qty}</p>
+              <p className='tableColHeader12' style={{ width: '10%' }}>{t.rate}</p>
+              <p className='tableColHeader12' style={{ width: '15%' }}>{t.amount}</p>
             </div>
                         {
                           billData.items.map((item,idx) => {
@@ -386,22 +435,22 @@ const Logobill = () => {
           {/* Subtotal and Totals */}
 
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-            <p style={{ fontSize: 14 }}>Thanks for your buisness</p>
+            <p style={{ fontSize: 14 }}>{t.thanks}</p>
             <div className='subtotalHeadRow12' >
               <div className='subtotalRow12'>
-                <p style={{ fontSize: 12 }}>Sub Total</p>
+                <p style={{ fontSize: 12 }}>{t.subTotal}</p>
                 <p style={{ fontSize: 12 }}>{billData.subTotal}</p>
               </div>
               <div className='subtotalRow12' >
-                <p style={{ fontSize: 12 }}>Discount ({billData.discount}%)</p>
+                <p style={{ fontSize: 12 }}>{t.discount} ({billData.discount}%)</p>
                 <p style={{ fontSize: 12 }}>{billData.DiscPrice}</p>
               </div>
               <div className='subtotalRow12' >
-                <p style={{ fontSize: 12 }}>Tax ({billData.taxRate}%)</p>
+                <p style={{ fontSize: 12 }}>{t.tax} ({billData.taxRate}%)</p>
                 <p style={{ fontSize: 12 }}>{billData.TaxPrice}</p>
               </div>
               <div className='subtotalRow112' >
-                <p style={{ fontSize: 15, color: '#fff' }}>Grand Total</p>
+                <p style={{ fontSize: 15, color: '#fff' }}>{t.grandTotal}</p>
                 <p style={{ fontSize: 15, color: '#fff' }}>₹ {billData.total.toFixed(2)}</p>
               </div>
             </div>
@@ -410,7 +459,7 @@ const Logobill = () => {
           <div className='footer12'>
             <div className='footerInner12'>
               <div style={{ display: 'flex', flexDirection: 'row', gap: 10, alignItems: 'flex-end', marginTop: 20 }}>
-                <p className='bold12' >Authorized Signature</p>
+                <p className='bold12' >{t.authorizedSignature}</p>
                 <div style={{ height: 1, width: 120, backgroundColor: '#000' }}></div>
               </div>
             </div>

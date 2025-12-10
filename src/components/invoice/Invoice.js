@@ -13,6 +13,22 @@ const Invoice = () => {
   const [invoiceTableData, setInvoiceTableData] = useState([]);
   const [invoiceForm1Data, setInvoiceForm1Data] = useState({});
 
+  // Language system
+  const language = localStorage.getItem('selectedLanguage') || 'en';
+  const translations = {
+    en: {
+      saveDraft: 'Save as Draft',
+      saveSend: 'Save and Send',
+      cancel: 'Cancel',
+    },
+    hi: {
+      saveDraft: 'ड्राफ्ट के रूप में सहेजें',
+      saveSend: 'सहेजें और भेजें',
+      cancel: 'रद्द करें',
+    },
+  };
+  const t = translations[language];
+
   const handleDraft=async()=>{
     try {
       const orgData = await AsyncStorage.getItem('selectedOrganization');
@@ -94,10 +110,10 @@ const Invoice = () => {
       <InvoiceTable onTableDataChange={(data) => setInvoiceTableData(data)} onForm1DataChange={(data) => setInvoiceForm1Data(data)} />
       <div className="flex space-x-4 mt-6 items-center h-14">
         <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md border border-gray-300 ml-6" onClick={handleDraft}>
-          Save as Draft
+          {t.saveDraft}
         </button>
         <button onClick={handleSave} className="bg-[#404dfb] text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center">
-          Save and Send
+          {t.saveSend}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5 ml-1"
@@ -108,7 +124,7 @@ const Invoice = () => {
           </svg>
         </button>
         <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md border border-gray-300">
-          Cancel
+          {t.cancel}
         </button>
       </div>
     </div>

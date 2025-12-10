@@ -3,43 +3,44 @@ import Select from 'react-select';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore, collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../firebase';
-function InvoiceForm({ onDataChange }) {
+import { useNavigate } from 'react-router-dom';
+function InvoiceForm({ onDataChange, onAddCustomer }) {
   const [customerOptions, setCustomerOptions] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [invoiceDate, setInvoiceDate] = useState('');
   const [invoiceNumber, setInvoiceNumber] = useState('INV-000001');
   const [terms, setTerms] = useState('Due On Receipt');
   const [dueDate, setDueDate] = useState('');
-    const [invoices, setInvoices] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const navigate = useNavigate();
+  // Fetch invoices from Firestore
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const orgData = localStorage.getItem('selectedOrganization');
+        const parsedOrgData = orgData ? JSON.parse(orgData) : null;
 
-    // Fetch invoices from Firestore
-    useEffect(() => {
-        const fetchInvoices = async () => {
-            try {
-                const orgData = localStorage.getItem('selectedOrganization');
-                const parsedOrgData = orgData ? JSON.parse(orgData) : null;
+        if (!parsedOrgData || !parsedOrgData.id) {
+          alert("No valid organization selected!");
+          return;
+        }
 
-                if (!parsedOrgData || !parsedOrgData.id) {
-                    alert("No valid organization selected!");
-                    return;
-                }
+        const q = query(
+          collection(db, `organizations/${parsedOrgData.id}/invoices`)
+        );
+        const querySnapshot = await getDocs(q);
+        const fetchedInvoices = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setInvoices(fetchedInvoices);
+      } catch (error) {
+        console.error("Error fetching invoices: ", error);
+      }
+    };
 
-                const q = query(
-                    collection(db, `organizations/${parsedOrgData.id}/invoices`)
-                );
-                const querySnapshot = await getDocs(q);
-                const fetchedInvoices = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                setInvoices(fetchedInvoices);
-            } catch (error) {
-                console.error("Error fetching invoices: ", error);
-            }
-        };
-
-        fetchInvoices();
-    }, []);
+    fetchInvoices();
+  }, []);
   const fetchData = async () => {
     try {
       const orgData = await AsyncStorage.getItem('selectedOrganization');
@@ -53,7 +54,7 @@ function InvoiceForm({ onDataChange }) {
       const db = getFirestore();
       const querySnapshot = await getDocs(collection(db, `organizations/${parsedOrgData.id}/customers`));
 
-    // Map customer data into options with full data stored
+      // Map customer data into options with full data stored
       const data = querySnapshot.docs.map((doc) => {
         const customer = doc.data();
         return {
@@ -61,7 +62,7 @@ function InvoiceForm({ onDataChange }) {
           label: customer.displayName || 'Unnamed Customer',
           fullData: {
             id: doc.id,
-            salutation:customer.salutation ,
+            salutation: customer.salutation,
             firstName: customer.firstName,
             lastName: customer.lastName,
             companyName: customer.companyName,
@@ -142,34 +143,75 @@ function InvoiceForm({ onDataChange }) {
       terms,
       dueDate,
     });
-  }, [selectedCustomer, invoiceNumber, invoiceDate, terms, dueDate, onDataChange]);
+  // Add invoices.length to the dependency array
+  }, [selectedCustomer, invoiceNumber, invoiceDate, terms, dueDate, onDataChange, invoices.length]);
+
+  // Language system
+  const language = localStorage.getItem('selectedLanguage') || 'en';
+  const translations = {
+    en: {
+      customerName: 'Customer Name*',
+      addNewCustomer: '+ Add New Customer',
+      invoiceNumber: 'Invoice#*',
+      invoiceDate: 'Invoice Date*',
+      terms: 'Terms',
+      dueDate: 'Due Date',
+      paid: 'Paid',
+      net15: '15 Days',
+      net30: '30 Days',
+      net45: '45 Days',
+      net60: '60 Days',
+      addTerms: 'Add Terms and Conditions',
+      selectOrAdd: 'Select or add a customer',
+    },
+    hi: {
+      customerName: 'ग्राहक का नाम*',
+      addNewCustomer: '+ नया ग्राहक जोड़ें',
+      invoiceNumber: 'चालान संख्या*',
+      invoiceDate: 'चालान तिथि*',
+      terms: 'शर्तें',
+      dueDate: 'नियत तिथि',
+      paid: 'भुगतान किया गया',
+      net15: 'नेट 15',
+      net30: 'नेट 30',
+      net45: 'नेट 45',
+      selectOrAdd: 'ग्राहक चुनें या जोड़ें',
+    },
+  };
+  const t = translations[language];
 
   return (
     <div className="p-6 bg-white rounded-lg  w-full mx-auto">
       <div className="mb-4">
-        <label className="block text-red-500 font-semibold text-sm mb-1">Customer Name*</label>
+        <label className="block text-red-500 font-semibold text-sm mb-1">{t.customerName}</label>
         <Select
           options={customerOptions}
           value={customerOptions.find((option) => option.value === selectedCustomer?.id)}
           onChange={(selectedOption) => setSelectedCustomer(selectedOption)}
-          placeholder="Select or add a customer"
+          placeholder={t.selectOrAdd}
           className="w-full text-sm"
         />
-
+        <button
+          type="button"
+          className="mt-2 w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-2 px-4 rounded border border-blue-200 transition-colors"
+          onClick={() => navigate("/dashboard/customerform")}
+        >
+          {t.addNewCustomer}
+        </button>
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-red-500 font-semibold text-sm mb-1">Invoice#*</label>
+          <label className="block text-red-500 font-semibold text-sm mb-1">{t.invoiceNumber}</label>
           <input
             type="text"
-            value={`INV-00000${invoices.length+1}`}
+            value={`INV-00000${invoices.length + 1}`}
             onChange={(e) => setInvoiceNumber(e.target.value)}
             className="w-full p-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div>
-          <label className="block text-red-500 font-semibold text-sm mb-1">Invoice Date*</label>
+          <label className="block text-red-500 font-semibold text-sm mb-1">{t.invoiceDate}</label>
           <input
             type="date"
             value={invoiceDate}
@@ -181,20 +223,20 @@ function InvoiceForm({ onDataChange }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block font-semibold text-gray-500 text-sm mb-2">Terms</label>
+          <label className="block font-semibold text-gray-500 text-sm mb-2">{t.terms}</label>
           <select
             value={terms}
             onChange={(e) => setTerms(e.target.value)}
             className="w-full p-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option>Paid</option>
-            <option>Net 15</option>
-            <option>Net 30</option>
-            <option>Net 45</option>
+            <option>{t.paid}</option>
+            <option>{t.net15}</option>
+            <option>{t.net30}</option>
+            <option>{t.net45}</option>
           </select>
         </div>
         <div>
-          <label className="block font-semibold text-sm text-gray-500 mb-2">Due Date</label>
+          <label className="block font-semibold text-sm text-gray-500 mb-2">{t.dueDate}</label>
           <input
             type="date"
             value={dueDate}

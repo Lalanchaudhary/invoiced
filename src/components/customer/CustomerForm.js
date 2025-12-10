@@ -53,6 +53,56 @@ const Form = ({ setFormView }) => {
         shippingPhone: ''
     });
 
+    // Language system
+    const language = localStorage.getItem('selectedLanguage') || 'en';
+    const translations = {
+        en: {
+            newCustomer: 'New Customer',
+            fillDetails: 'Fill in the details below to add a new customer.',
+            customerType: 'Customer Type',
+            business: 'Business',
+            individual: 'Individual',
+            primaryContact: 'Primary Contact',
+            salutation: 'Salutation',
+            firstName: 'First Name',
+            lastName: 'Last Name',
+            companyName: 'Company Name',
+            displayName: 'Display Name*',
+            email: 'Email*',
+            workPhone: 'Work Phone',
+            mobile: 'Mobile',
+            document: 'Document',
+            uploadDocument: 'Upload Document',
+            documentUploaded: 'Document uploaded successfully',
+            save: 'Save',
+            cancel: 'Cancel',
+            selectSalutation: 'Salutation',
+        },
+        hi: {
+            newCustomer: 'नया ग्राहक',
+            fillDetails: 'नया ग्राहक जोड़ने के लिए नीचे विवरण भरें।',
+            customerType: 'ग्राहक प्रकार',
+            business: 'व्यवसाय',
+            individual: 'व्यक्ति',
+            primaryContact: 'प्राथमिक संपर्क',
+            salutation: 'उपाधि',
+            firstName: 'पहला नाम',
+            lastName: 'अंतिम नाम',
+            companyName: 'कंपनी का नाम',
+            displayName: 'प्रदर्शित नाम*',
+            email: 'ईमेल*',
+            workPhone: 'कार्य फ़ोन',
+            mobile: 'मोबाइल',
+            document: 'दस्तावेज़',
+            uploadDocument: 'दस्तावेज़ अपलोड करें',
+            documentUploaded: 'दस्तावेज़ सफलतापूर्वक अपलोड हुआ',
+            save: 'सहेजें',
+            cancel: 'रद्द करें',
+            selectSalutation: 'उपाधि',
+        },
+    };
+    const t = translations[language];
+
     const validateForm = () => {
         const newErrors = {};
         
@@ -162,97 +212,105 @@ const Form = ({ setFormView }) => {
     }
 
     return (
-        <div className='p-3 relative ml-52 pl-6'>
-            <ToastContainer />
-            <h4 className='text-2xl text-gray-800 mb-4 border-b-2 border-black-500 pb-1'>
-                New Customer
-            </h4>
-            
-            {/* Customer Type Selection */}
-            <div className='flex mt-5 h-10 gap-16'>
-                <div className='flex gap-1 items-center h-0 mt-3 w-32' style={{ fontSize: 13 }}>
-                    <p>Customer Type</p>
-                    <CiCircleQuestion className='font-medium' />
-                </div>
-                <div className='flex gap-4 h-0'>
-                    <div>
-                        <input
-                            type="radio"
-                            id="Business"
-                            value="Business"
-                            checked={selectedValue === "Business"}
-                            onChange={() => handleRadioChange("Business")}
-                        />
-                        <label htmlFor="Business" className='ml-2'>Business</label>
-                    </div>
-                    <div>
-                        <input
-                            type="radio"
-                            id="Individual"
-                            value="Individual"
-                            checked={selectedValue === "Individual"}
-                            onChange={() => handleRadioChange("Individual")}
-                        />
-                        <label htmlFor="Individual" className='ml-2'>Individual</label>
-                    </div>
-                </div>
-            </div>
+        <div className="flex justify-center items-center min-h-screen bg-gray-50">
+            <div className="relative bg-white shadow-2xl rounded-2xl p-10 w-full max-w-2xl border border-gray-100">
+                <ToastContainer />
+                <button
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+                    onClick={() => setFormView(false)}
+                    aria-label="Close form"
+                >
+                    <RxCross2 size={24} />
+                </button>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">{t.newCustomer}</h2>
+                <p className="text-gray-500 mb-6 text-sm">{t.fillDetails}</p>
+                <div className="border-b border-gray-200 mb-6"></div>
 
-            {/* Primary Contact Information */}
-            <div className='flex my-2 gap-16'>
-                <div className='flex gap-1 items-center h-0 mt-3 w-32' style={{ fontSize: 13 }}>
-                    <p>Primary Contact</p>
-                    <CiCircleQuestion className='font-medium' />
+                {/* Customer Type Selection */}
+                <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium text-gray-700">{t.customerType}</span>
+                        <CiCircleQuestion className="text-gray-400" />
+                    </div>
+                    <div className="flex gap-6">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="radio"
+                                id="Business"
+                                value="Business"
+                                checked={selectedValue === "Business"}
+                                onChange={() => handleRadioChange("Business")}
+                                className="accent-blue-500"
+                            />
+                            <span>{t.business}</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="radio"
+                                id="Individual"
+                                value="Individual"
+                                checked={selectedValue === "Individual"}
+                                onChange={() => handleRadioChange("Individual")}
+                                className="accent-blue-500"
+                            />
+                            <span>{t.individual}</span>
+                        </label>
+                    </div>
                 </div>
-                <div className='flex'>
-                    <div className='rounded border border-gray-300 mt-[-3px] bg-white'>
+
+                {/* Primary Contact Information */}
+                <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium text-gray-700">{t.primaryContact}</span>
+                        <CiCircleQuestion className="text-gray-400" />
+                    </div>
+                    <div className="flex gap-2">
                         <select
                             onChange={handleChange}
                             name='salutation'
-                            className='w-full p-2 pr-8 rounded text-gray-500 font-light text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-500'
+                            className="rounded-lg border border-gray-300 px-3 py-2 text-gray-500 font-light text-sm bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition outline-none"
+                            value={fulldata.salutation}
                         >
-                            <option value="">Salutation</option>
-                            {["Mr.", "Ms.", "Dr.", "Er."].map((option, index) => (
-                                <option key={index} value={option}>
-                                    {option}
-                                </option>
+                            <option value="">{t.selectSalutation}</option>
+                            {[t.salutation, "Mr.", "Ms.", "Dr.", "Er."].map((option, index) => (
+                                <option key={index} value={option}>{option}</option>
                             ))}
                         </select>
+                        <input
+                            placeholder={t.firstName}
+                            name='firstName'
+                            onChange={handleChange}
+                            className="rounded-lg w-32 px-3 py-2 text-sm font-light border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition outline-none"
+                        />
+                        <input
+                            placeholder={t.lastName}
+                            name='lastName'
+                            onChange={handleChange}
+                            className="rounded-lg w-32 px-3 py-2 text-sm font-light border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition outline-none"
+                        />
                     </div>
-                    <input 
-                        placeholder='First Name' 
-                        name='firstName' 
+                </div>
+
+                {/* Company Name */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium mb-1" htmlFor="companyName">{t.companyName}</label>
+                    <input
+                        id="companyName"
+                        placeholder={t.companyName}
+                        className="w-full rounded-lg border border-gray-300 py-2 px-4 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition outline-none"
+                        name='companyName'
+                        value={fulldata.companyName}
                         onChange={handleChange}
-                        className='rounded w-32 px-2 py-1 mx-2 mt-[-4px] text-sm font-light border border-gray-300' 
-                    />
-                    <input 
-                        placeholder='Last Name' 
-                        name='lastName' 
-                        onChange={handleChange}
-                        className='rounded w-32 px-2 py-1 text-sm font-light mx-2 mt-[-4px] border border-gray-300' 
                     />
                 </div>
-            </div>
 
-            {/* Company Name */}
-            <div className='flex my-2 mt-4 gap-16'>
-                <p className='w-32 font-normal text-gray-800 text-sm'>Company Name</p>
-                <input
-                    placeholder=''
-                    className='w-96 rounded border border-gray-400 py-1 focus:border-blue-400 px-3'
-                    name='companyName'
-                    value={fulldata.companyName}
-                    onChange={handleChange}
-                />
-            </div>
-
-            {/* Display Name */}
-            <div className='flex my-2 gap-16'>
-                <p className='text-[#b91c1c] w-32 text-sm'>Display Name*</p>
-                <div className="relative">
+                {/* Display Name */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium mb-1" htmlFor="displayName">{t.displayName}</label>
                     <input
-                        placeholder=''
-                        className={`w-96 rounded border ${errors.displayName ? 'border-red-500' : 'border-gray-400'} py-1 focus:border-blue-400 px-3`}
+                        id="displayName"
+                        placeholder={t.displayName}
+                        className={`w-full rounded-lg border ${errors.displayName ? 'border-red-500' : 'border-gray-300'} py-2 px-4 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition outline-none`}
                         value={fulldata.displayName}
                         name='displayName'
                         onChange={handleChange}
@@ -261,15 +319,14 @@ const Form = ({ setFormView }) => {
                         <p className="text-red-500 text-xs mt-1">{errors.displayName}</p>
                     )}
                 </div>
-            </div>
 
-            {/* Contact Information */}
-            <div className='flex my-2 gap-16'>
-                <p className='w-32 font-normal text-gray-800 text-sm'>Email</p>
-                <div className="relative">
+                {/* Contact Information */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium mb-1" htmlFor="email">{t.email}</label>
                     <input
-                        placeholder=''
-                        className={`w-96 rounded border ${errors.email ? 'border-red-500' : 'border-gray-400'} py-1 focus:border-blue-400 px-3`}
+                        id="email"
+                        placeholder={t.email}
+                        className={`w-full rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'} py-2 px-4 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition outline-none`}
                         value={fulldata.email}
                         name='email'
                         onChange={handleChange}
@@ -278,14 +335,13 @@ const Form = ({ setFormView }) => {
                         <p className="text-red-500 text-xs mt-1">{errors.email}</p>
                     )}
                 </div>
-            </div>
 
-            <div className='flex my-2 gap-16'>
-                <p className='w-32 font-normal text-gray-800 text-sm'>Work Phone</p>
-                <div className="relative">
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium mb-1" htmlFor="workPhone">{t.workPhone}</label>
                     <input
-                        placeholder=''
-                        className={`w-96 rounded border ${errors.workPhone ? 'border-red-500' : 'border-gray-400'} py-1 focus:border-blue-400 px-3`}
+                        id="workPhone"
+                        placeholder={t.workPhone}
+                        className={`w-full rounded-lg border ${errors.workPhone ? 'border-red-500' : 'border-gray-300'} py-2 px-4 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition outline-none`}
                         value={fulldata.workPhone}
                         name='workPhone'
                         onChange={handleChange}
@@ -294,14 +350,13 @@ const Form = ({ setFormView }) => {
                         <p className="text-red-500 text-xs mt-1">{errors.workPhone}</p>
                     )}
                 </div>
-            </div>
 
-            <div className='flex my-2 gap-16'>
-                <p className='w-32 font-normal text-gray-800 text-sm'>Mobile</p>
-                <div className="relative">
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium mb-1" htmlFor="mobile">{t.mobile}</label>
                     <input
-                        placeholder=''
-                        className={`w-96 rounded border ${errors.mobile ? 'border-red-500' : 'border-gray-400'} py-1 focus:border-blue-400 px-3`}
+                        id="mobile"
+                        placeholder={t.mobile}
+                        className={`w-full rounded-lg border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} py-2 px-4 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition outline-none`}
                         value={fulldata.mobile}
                         name='mobile'
                         onChange={handleChange}
@@ -310,39 +365,46 @@ const Form = ({ setFormView }) => {
                         <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>
                     )}
                 </div>
-            </div>
 
-            {/* Document Upload */}
-            <div className='flex my-2 gap-16'>
-                <p className='w-32 font-normal text-gray-800 text-sm'>Document</p>
-                <div className="relative">
-                    <input
-                        type="file"
-                        ref={Inputref}
-                        onChange={handleFileChange}
-                        className="hidden"
-                        accept=".pdf,.doc,.docx"
-                    />
-                    <button
-                        onClick={UploadImage}
-                        className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded border border-gray-300 hover:bg-gray-200"
-                    >
-                        <FiUpload /> Upload Document
-                    </button>
-                    {fileUrl && (
-                        <p className="text-green-500 text-xs mt-1">Document uploaded successfully</p>
-                    )}
+                {/* Document Upload */}
+                <div className="mb-6">
+                    <label className="block text-gray-700 font-medium mb-1">{t.document}</label>
+                    <div className="flex items-center gap-4">
+                        <input
+                            type="file"
+                            ref={Inputref}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept=".pdf,.doc,.docx"
+                        />
+                        <button
+                            onClick={UploadImage}
+                            className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-200 transition-colors"
+                        >
+                            <FiUpload /> {t.uploadDocument}
+                        </button>
+                        {fileUrl && (
+                            <span className="text-green-500 text-xs">{t.documentUploaded}</span>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {/* Save Button */}
-            <div className='flex justify-end mt-8'>
-                <button
-                    onClick={HandleSave}
-                    className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-                >
-                    Save
-                </button>
+                {/* Save Button */}
+                <div className="flex justify-end mt-8">
+                    <button
+                        onClick={HandleSave}
+                        className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold px-8 py-2 rounded-lg shadow transition-colors focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    >
+                        {t.save}
+                    </button>
+                    <button
+                        type="button"
+                        className="ml-4 flex items-center gap-2 text-gray-700 bg-gray-200 hover:bg-gray-300 active:bg-gray-400 text-sm font-semibold px-8 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-200"
+                        onClick={() => setFormView(false)}
+                    >
+                        {t.cancel}
+                    </button>
+                </div>
             </div>
         </div>
     );

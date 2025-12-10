@@ -6,10 +6,11 @@ import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer and toast
 
 import OrganizationForm from './components/OrganizationForm';
 import Chatbot from './components/Chatbot';
+import { LanguageProvider } from './LanguageContext';
 
 // Global Styles using Inter font
 const GlobalStyles = createGlobalStyle`
@@ -57,14 +58,16 @@ function AppRoutes() {
 
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <ToastContainer /> 
-        <GlobalStyles />
-        <AppRoutes />
-        <Chatbot />
-      </Router>
-    </div>
+    <LanguageProvider>
+      <div className="App">
+        <Router>
+          <ToastContainer /> 
+          <GlobalStyles />
+          <AppRoutes />
+          <Chatbot />
+        </Router>
+      </div>
+    </LanguageProvider>
   );
 }
 
